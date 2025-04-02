@@ -12,5 +12,5 @@ Build image from `Dockerfile` and fix `test/apt_rpm/roles/main/molecule/default/
 To run test
 ```
 $ cd test/apt_rpm/roles/main
-$ molecule testA
+$ molecule test
 ```
