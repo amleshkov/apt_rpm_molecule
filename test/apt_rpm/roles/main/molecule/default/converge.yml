@@ -1,0 +1,21 @@
+---
+- name: Include a role from a collection
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Update cache
+      raw: "apt-get update"
+
+    - name: Install Python3 package
+      raw: "apt-get install -y python3"
+
+    - setup:
+
+    - name: Info
+      debug:
+        msg: "Running on {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Testing role
+      ansible.builtin.include_role:
+        name: test.apt_rpm.main
+        tasks_from: main.yml

@@ -1,0 +1,108 @@
+---
+- name: Install curl
+  apt_rpm:
+    name: curl
+    state: present
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package version
+  assert:
+    that: "output.stdout == 'curl-7.79.0-alt2.x86_64'"
+
+- name: Remove package
+  apt_rpm:
+    name: curl
+    state: absent
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package absence
+  assert:
+    that:
+      - output.rc == 1
+      - output.stderr == "package curl is not installed"
+
+- name: Install curl with pinned version
+  apt_rpm:
+    name: curl=7.79.0
+    state: present
+
+- name: Install curl with pinned version again
+  apt_rpm:
+    name: curl=7.79.0
+    state: present
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package version curl installed with pinned version
+  assert:
+    that: "output.stdout == 'curl-7.79.0-alt2.x86_64'"
+
+- name: Upgrade repository
+  copy:
+    dest: "/etc/apt/sources.list.d/alt.list"
+    content: |
+      rpm [p10] http://ftp.altlinux.org/pub/distributions/ALTLinux p10/branch/x86_64 classic
+      rpm [p10] http://ftp.altlinux.org/pub/distributions/ALTLinux p10/branch/x86_64-i586 classic
+      rpm [p10] http://ftp.altlinux.org/pub/distributions/ALTLinux p10/branch/noarch classic
+
+- name: Install curl
+  apt_rpm:
+    name: curl
+    state: present
+    update_cache: true
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package version doesn't change
+  assert:
+    that: "output.stdout == 'curl-7.79.0-alt2.x86_64'"
+
+- name: Install curl
+  apt_rpm:
+    name: curl
+    state: present_not_latest
+    update_cache: true
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package version doesn't change with present_not_latest
+  assert:
+    that: "output.stdout == 'curl-7.79.0-alt2.x86_64'"
+
+- name: Install curl latest version with apt-get update
+  apt_rpm:
+    name: curl
+    state: latest
+    update_cache: true
+
+- name: Get package status
+  command:
+    cmd: "rpm -q curl"
+  register: output
+  ignore_errors: true
+
+- name: Assert package version upgraded
+  assert:
+    that: "output.stdout == 'curl-8.12.0-alt1.x86_64'"

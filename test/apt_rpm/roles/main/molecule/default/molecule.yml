@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: docker
+  options:
+    managed: false
+    login_cmd_template: "docker exec -ti {instance} bash"
+    ansible_connection_options:
+      ansible_connection: docker
+platforms:
+  - name: alt
+    image: alt:p9
+#   image: alt-python:p9
+scenario:
+  test_sequence:
+    - create
+    - converge
+    - destroy
